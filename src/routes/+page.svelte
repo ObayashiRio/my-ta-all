@@ -2,7 +2,7 @@
 	let userMessage = '';
 	let problems = [];
 	let chatHistory = [];
-	let knowledgeBase = [];
+	let knowledgeBase = [""];
 	let currentProblemIndex = 0;
 	let showHint = false;
 	let isCorrect = false;
@@ -55,9 +55,11 @@
 	}
 
 	async function initializeAgent() {
-		await getAgentResponse([problemPrompt]).then((response) => {
-			problems = JSON.parse(response).problems;
-		});
+		if (problems.length === 0) {
+			await getAgentResponse([problemPrompt]).then((response) => {
+				problems = JSON.parse(response).problems;
+			});
+		}
 
 		const initialBehaviorPrompt = {
 			role: 'user',
@@ -73,7 +75,9 @@
 		};
 
 		await getAgentResponse([initialBehaviorPrompt]).then((response) => {
-			chatHistory = [{ role: 'assistant', content: JSON.parse(response).message }];
+			chatHistory = [
+				{ role: 'assistant', content: JSON.parse(response).message },
+			];
 		});
 	}
 
@@ -146,11 +150,11 @@
 			isCorrect = JSON.parse(response).is_correct;
 		});
 
-		let agentMessage = "";
+		let agentMessage = '';
 		if (isCorrect) {
-			agentMessage = "正しく動きました！ありがとうございます！";
+			agentMessage = '正しく動きました！ありがとうございます！';
 		} else {
-			agentMessage = "まだうまく動きません...";
+			agentMessage = 'まだうまく動きません...';
 			showHint = true;
 		}
 
@@ -173,12 +177,14 @@
 	<br />
 	<button on:click={() => sendMessage()}>送信</button>
 	{#if isCorrect}
-		<button on:click={() => {
-			currentProblemIndex += 1;
-			showHint = false;
-			isCorrect = false;
-			initializeAgent();
-		}}>次の問題へ</button>
+		<button
+			on:click={() => {
+				currentProblemIndex += 1;
+				showHint = false;
+				isCorrect = false;
+				chatHistory = [];
+				initializeAgent();
+			}}>次の問題へ</button>
 	{/if}
 
 	{#if currentProblemIndex === problems.length}
@@ -193,15 +199,15 @@
 			<p>エラー: {error.message}</p>
 		{/await}
 	{/if}
-{#if problems.length > 0}
-<p>Level: {problems[currentProblemIndex].level}</p>
-<p>バグのあるコード:</p>
-<pre><code>{problems[currentProblemIndex].buggy_code}</code></pre>
-{/if}
-{#if showHint}
-	<p>ヒント:</p>
-	<pre><code>{problems[currentProblemIndex].hint}</code></pre>
-{/if}
+	{#if problems.length > 0}
+		<p>Level: {problems[currentProblemIndex].level}</p>
+		<p>バグのあるコード:</p>
+		<pre><code>{problems[currentProblemIndex].buggy_code}</code></pre>
+	{/if}
+	{#if showHint}
+		<p>ヒント:</p>
+		<pre><code>{problems[currentProblemIndex].hint}</code></pre>
+	{/if}
 
 	{#each chatHistory.slice().reverse() as { role, content }, i}
 		{#if role !== 'system'}
