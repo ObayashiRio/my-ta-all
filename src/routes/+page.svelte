@@ -142,10 +142,13 @@
 			`,
 		};
 
+		await getAgentResponse([checkPrompt]).then((response) => {
+			isCorrect = JSON.parse(response).is_crrrect;
+		});
+
 		let agentMessage = "";
-		if (agentResponse.is_correct) {
+		if (is_correct) {
 			agentMessage = "正しく動きました！ありがとうございます！";
-			isCorrect = true;
 		} else {
 			agentMessage = "まだうまく動きません...";
 			showHint = true;
