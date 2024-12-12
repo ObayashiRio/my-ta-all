@@ -4,7 +4,7 @@ import adapter from '@sveltejs/adapter-vercel';
 const config = {
 	kit: {
 		adapter: adapter({
-			runtime: 'nodejs18.x' // Node.jsのバージョンを明示的に指定
+			// `runtime` を削除
 		})
 	}
 };
