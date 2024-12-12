@@ -15,7 +15,7 @@ export async function POST({ request }) {
 async function getGroqChatCompletion(userMessage) {
 	return groq.chat.completions.create({
 		messages: userMessage,
-		model: "llama-3.2-90b-vision-preview",
+		model: "llama-3.1-70b-versatile",
 		temperature: 0,
 		response_format: { "type": "json_object" },
 	});
