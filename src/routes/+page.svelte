@@ -28,7 +28,7 @@
 			const problemPrompt = {
 				role: "user",
 				content: `
-                以下の条件に基づき、ランダムに異なる問題を生成してください．難易度は${randomFactor}に基づきます．
+                以下の条件に基づき，ランダムに異なる問題を生成してください．難易度は${randomFactor}に基づきます．
 				${randomFactor}の数字が大きければ大きいほど，難しい問題を生成する必要があります．
                 5問生成します。
                 どこが誤りであるかは明示する必要はありません．
@@ -136,6 +136,12 @@
 	}
 
 	async function sendMessage() {
+		// 入力チェック
+		if (!userMessage.trim()) {
+			alert("入力して送信ボタンを押してください．");
+			return;
+		}
+
 		chatHistory = [
 			...chatHistory,
 			{ role: "user", content: `${userMessage}」` },
@@ -171,7 +177,7 @@
 		problems[currentProblemIndex].buggy_sentence =
 			agentResponse.edited_sentence;
 
-		// 正誤判定プロンプト（修正された英文が正しいかどうかを検証する）
+		// 正誤判定プロンプト
 		const checkPrompt = {
 			role: "system",
 			content: `
@@ -181,7 +187,7 @@
                 "edited_sentence": "${problems[currentProblemIndex].buggy_sentence}",
                 "expected_behavior": "${problems[currentProblemIndex].answer}",
                 "is_correct": false,
-                "error_details": "" # 誤りがある場合は詳細を日本語で説明してください
+                "error_details": "" 
             }
             `,
 		};
